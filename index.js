@@ -17,6 +17,22 @@ connectToMongoDB("mongodb://127.0.0.1:27017/short-url")
 // middleware
 app.use(express.json());
 
+// testing
+
+app.get('/test',async(req,res)=>{
+    const allurls = await URL.find({});
+    return res.end(`
+        <html>
+            <head></head>
+            <body>
+            <ol>
+                ${allurls.map(url=>`<li>${url.shortId} - ${url.redirectUrl} - ${url.visitHistory.length}</li>`).join("")}
+            </ol>
+            </body>
+        </html>
+        `);
+})
+
 app.use('/url',urlRoute);
 
 app.get('/:shortid',async(req,res)=>{
