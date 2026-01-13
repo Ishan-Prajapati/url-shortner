@@ -1,9 +1,13 @@
 const express = require("express");
+const path = require('path');
 const app = express();
 
-const urlRoute = require('./routes/url');
 const {connectToMongoDB} = require('./connect');
-const URL = require('./models/url')
+const URL = require('./models/url');
+
+const staticRoute = require('./routes/staticRouter');
+const urlRoute = require('./routes/url');
+const userRoute = require('./routes/user');
 
 const PORT = 8001;
 
@@ -14,26 +18,20 @@ connectToMongoDB("mongodb://127.0.0.1:27017/short-url")
     console.log(" DB not connected",err);
 });
 
+
+app.set("view engine","ejs");
+app.set('views',path.resolve("./views"));
 // middleware
 app.use(express.json());
+app.use(express.urlencoded({extended:false}))
 
-// testing
 
-app.get('/test',async(req,res)=>{
-    const allurls = await URL.find({});
-    return res.end(`
-        <html>
-            <head></head>
-            <body>
-            <ol>
-                ${allurls.map(url=>`<li>${url.shortId} - ${url.redirectUrl} - ${url.visitHistory.length}</li>`).join("")}
-            </ol>
-            </body>
-        </html>
-        `);
-})
+
+
 
 app.use('/url',urlRoute);
+app.use('/user',userRoute);
+app.use('/',staticRoute);
 
 app.get('/:shortid',async(req,res)=>{
     const shortid = req.params.shortid;
