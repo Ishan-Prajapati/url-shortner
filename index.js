@@ -1,5 +1,7 @@
 const express = require("express");
 const path = require('path');
+const cookieParser = require('cookie-parser');
+
 const app = express();
 
 const {connectToMongoDB} = require('./connect');
@@ -23,7 +25,8 @@ app.set("view engine","ejs");
 app.set('views',path.resolve("./views"));
 // middleware
 app.use(express.json());
-app.use(express.urlencoded({extended:false}))
+app.use(cookieParser());
+app.use(express.urlencoded({extended:false}));
 
 
 
